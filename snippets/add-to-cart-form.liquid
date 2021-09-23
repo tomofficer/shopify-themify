@@ -1,0 +1,43 @@
+<form id="add-to-cart-form">
+    <button @click="addToCart" type="submit" name="add" id="add-to-cart-button">Add to cart</button>
+</form>
+
+
+<script>
+    if (document.querySelector('#add-to-cart-form')) {
+
+        const productForm = Vue.createApp({
+            delimiters: ['${', '}'],
+            data() {
+                return {
+                    variant: ""
+                }
+            },
+            created() {
+                axios.get("/products/{{ product.handle }}.js")
+                    .then(results => {
+                        this.variant = results.data.variants[0].id
+                    })
+            },
+            methods: {
+                addToCart(event) {
+                    event.preventDefault()
+
+                    let data = {
+                        id: this.variant,
+                        quantity: 1
+                    }
+
+                    axios.post('/cart/add.js', data)
+                        .then((response) => {
+                            console.log(response)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
+                }
+            }
+        }).mount('#add-to-cart-form')
+
+    }
+</script>
