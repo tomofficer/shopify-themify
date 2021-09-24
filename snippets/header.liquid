@@ -27,9 +27,15 @@
         
     
     <div class="menu-drawer">
+        {% unless template == "product" %}
         <button class="menu-button">
             <span>Menu</span>
         </button>
+        {% else %}
+        <a href="javascript:history.back()" class="menu-button">
+            <span>Back</span>
+        </a>
+        {% endunless %}
     </div>
 
     <a href="/" class="header-title">{{ shop.name }}</a>
@@ -46,8 +52,11 @@
     </div>
 
     <div class="mini-cart" :class="{ hidden: miniCart }">
+        <button class="mini-cart-close-button" @click="toggleMiniCart">Close</button>
         {% render 'mini-cart' %}
     </div>
+
+    <div class="outside" v-if="!miniCart || !menuDrawer" @click="closeAllDrawers"></div>
 
 </header>
 
@@ -65,6 +74,37 @@
             methods: {
                 toggleMiniCart() {
                     toggleMiniCart.openCart()
+                },
+                closeAllDrawers() {
+                    toggleClose.closeAll()
+                },
+                decrement(item) {
+                    const data = {
+                        "id": item.key,
+                        "quantity": item.quantity - 1
+                    }
+
+                    axios.post('/cart/change.js', data)
+                        .then(response => {
+                            store.getCart()
+                        })
+                        .catch(error => console.log(error))
+                },
+                increment(item) {
+                    const data = {
+                        "id": item.key,
+                        "quantity": item.quantity + 1
+                    }
+
+                    axios.post('/cart/change.js', data)
+                        .then(response => {
+                            store.getCart()
+                        })
+                        .catch(error => console.log(error))
+                },
+                money(value) {
+                    if (!value) return 0
+                    return "$" + (value / 100).toFixed(2)
                 }
             },
             computed: {
