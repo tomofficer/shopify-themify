@@ -1,34 +1,8 @@
-{% comment %}
-{% for link in linklists.main-menu.links %}
-{% assign child_list_handle = link.title | handleize %}
-{% if linklists[child_list_handle].links != blank %}
-<a href="{{ link.url }}">{{ link.title }}</a>
-[{% for childlink in linklists[child_list_handle].links %}
-<a href="{{ childlink.url }}">{{ childlink.title | escape }}</a>
-{% endfor %}]
-{% else %}
-<a href="{{ link.url }}">{{ link.title }}</a>
-{% endif %}
-{% endfor %}
-
-{% if shop.customer_accounts_enabled %}
-{% if customer %}
-<a href="/account">account</a>
-{{ 'log out' | customer_logout_link }}
-{% else %}
-{{ 'log in ' | customer_login_link }}
-{{ 'register' | customer_register_link }}
-{% endif %}
-{% endif %}
-{% endcomment %}
 
 <header class="header" id="header">
     <div class="header-inner flex space-between">
-        
-    
-    <div class="menu-drawer">
         {% unless template == "product" %}
-        <button class="menu-button">
+        <button class="menu-button" @click="toggleMenu">
             <span>Menu</span>
         </button>
         {% else %}
@@ -36,7 +10,7 @@
             <span>Back</span>
         </a>
         {% endunless %}
-    </div>
+ 
 
     <a href="/" class="header-title">{{ shop.name }}</a>
 
@@ -49,6 +23,10 @@
             </span>
         </button>
     </div>
+    </div>
+
+    <div class="menu-drawer" :class="{ hidden: menuDrawer }">
+        {% render 'menu-drawer' %}
     </div>
 
     <div class="mini-cart" :class="{ hidden: miniCart }">
@@ -74,6 +52,9 @@
             methods: {
                 toggleMiniCart() {
                     toggleMiniCart.openCart()
+                },
+                toggleMenu() {
+                    toggleMenu.openMenu()
                 },
                 closeAllDrawers() {
                     toggleClose.closeAll()
